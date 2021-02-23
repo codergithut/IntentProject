@@ -72,7 +72,7 @@ public class Component implements CountChangeCost{
 
         int changeCost = 0;
 
-        if(CollectionUtils.isEmpty(components)) {
+        if(!CollectionUtils.isEmpty(components)) {
 
             for(Component component : components) {
                 changeCost += component.countChangeCost();

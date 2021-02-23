@@ -63,10 +63,15 @@ public class Product {
     }
 
     public Integer countTotalCost() {
+        totalCost = 0;
         if(CollectionUtils.isEmpty(components)) {
             return fixedCost;
         }
-        totalCost = fixedCost + countTotalCost();
+        for(Component component : components) {
+            System.out.print(component.countChangeCost());
+            totalCost += component.countChangeCost();
+        }
+        totalCost += fixedCost;
         return totalCost;
     }
 }
