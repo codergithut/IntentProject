@@ -4,6 +4,7 @@ import com.intent.tianjian.mock.CreateProductFactory;
 import com.intent.tianjian.product.Product;
 import com.intent.tianjian.product.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by tianjian on 2021/2/23.
  */
 @RestController
-public class Productcontroller {
+public class ProductController {
 
     @Autowired
     private ProductRepository productRepository;
@@ -27,6 +28,12 @@ public class Productcontroller {
                                    @RequestParam("fixCost") Integer fixCost) {
 
 
+    }
+
+    @GetMapping("/test")
+    public void getValue() {
+        Product product = productRepository.findByCompentId("22");
+        System.out.println(product.getName());
     }
 
 
