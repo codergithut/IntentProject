@@ -1,13 +1,16 @@
 package com.intent.tianjian.product;
 
+import cn.hutool.core.util.RandomUtil;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Node
 public class Component implements CountChangeCost{
 
     @Id
@@ -20,15 +23,19 @@ public class Component implements CountChangeCost{
 
     private Integer totalCost;
 
-    @Relationship(type = "contains")
-    private Set<Component> components = new HashSet<>();
-
-    public void addComponent(Component component) {
-        components.add(component);
-    }
+    @Relationship(type="contain")
+    private Set<ContainRelation> containRelations = new HashSet();
 
     public Long getId() {
         return id;
+    }
+
+    public Set<ContainRelation> getContainRelations() {
+        return containRelations;
+    }
+
+    public void setContainRelations(Set<ContainRelation> containRelations) {
+        this.containRelations = containRelations;
     }
 
     public void setId(Long id) {
@@ -47,6 +54,14 @@ public class Component implements CountChangeCost{
         return fixedCost;
     }
 
+    public void addContainsRelation(Component component) {
+        ContainRelation containRelation = new ContainRelation();
+        containRelation.setComponent(component);
+        containRelation.setWeight(RandomUtil.randomInt(6));
+        containRelations.add(containRelation);
+
+    }
+
     public void setFixedCost(Integer fixedCost) {
         this.fixedCost = fixedCost;
     }
@@ -59,23 +74,18 @@ public class Component implements CountChangeCost{
         this.totalCost = totalCost;
     }
 
-    public Set<Component> getComponents() {
-        return components;
-    }
 
-    public void setComponents(Set<Component> components) {
-        this.components = components;
-    }
+
 
     @Override
     public Integer countChangeCost() {
 
         int changeCost = 0;
 
-        if(!CollectionUtils.isEmpty(components)) {
+        if(!CollectionUtils.isEmpty(containRelations)) {
 
-            for(Component component : components) {
-                changeCost += component.countChangeCost();
+            for(ContainRelation containRelation : containRelations) {
+                changeCost += containRelation.getComponent().countChangeCost() * containRelation.getWeight();
             }
         }
         totalCost = fixedCost + changeCost;

@@ -13,49 +13,46 @@ import java.util.Set;
 public class CreateProductFactory {
     public static Product createProduct() {
         Component huohuasai = new Component();
-        huohuasai.setFixedCost(RandomUtil.randomInt());
+        huohuasai.setFixedCost(RandomUtil.randomInt(100));
         huohuasai.setTotalCost(0);
         huohuasai.setName("火花塞");
 
         Component dahuoshi = new Component();
         dahuoshi.setName("打火石");
         dahuoshi.setTotalCost(0);
-        dahuoshi.setFixedCost(RandomUtil.randomInt());
-        huohuasai.addComponent(dahuoshi);
+        dahuoshi.setFixedCost(RandomUtil.randomInt(200));
+        huohuasai.addContainsRelation(dahuoshi);
 
         Component taozhi = new Component();
         taozhi.setName("套子");
         taozhi.setTotalCost(0);
-        taozhi.setFixedCost(RandomUtil.randomInt());
-        huohuasai.addComponent(taozhi);
+        taozhi.setFixedCost(RandomUtil.randomInt(180));
+        huohuasai.addContainsRelation(taozhi);
 
         Component chepi = new Component();
-        chepi.setFixedCost(RandomUtil.randomInt());
+        chepi.setFixedCost(RandomUtil.randomInt(220));
         chepi.setTotalCost(0);
         chepi.setName("车大皮");
 
         Component lungu = new Component();
         lungu.setName("轮毂");
-        lungu.setFixedCost(RandomUtil.randomInt());
+        lungu.setFixedCost(RandomUtil.randomInt(321));
         lungu.setTotalCost(0);
 
         Component lunzi = new Component();
         lunzi.setName("轮子");
-        lunzi.setFixedCost(RandomUtil.randomInt());
+        lunzi.setFixedCost(RandomUtil.randomInt(123));
         lunzi.setTotalCost(0);
-        lunzi.addComponent(chepi);
-        lunzi.addComponent(lungu);
-
-        Set<Component> componentSet = new HashSet<>();
-        componentSet.add(huohuasai);
-        componentSet.add(lunzi);
+        lunzi.addContainsRelation(chepi);
+        lunzi.addContainsRelation(lungu);
 
         Product product = new Product();
-        product.setFixedCost(RandomUtil.randomInt());
+        product.setFixedCost(RandomUtil.randomInt(131));
         product.setName("机器人" + RandomUtil.randomString(3));
         product.setTotalCost(0);
-        product.setComponents(componentSet);
-
+        product.addComponentRelation(huohuasai);
+        product.addComponentRelation(lunzi);
+        product.setTotalCost(product.countTotalCost());
         return product;
     }
 }

@@ -1,12 +1,16 @@
 package com.intent.tianjian.product;
 
+import cn.hutool.core.util.RandomUtil;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashSet;
 import java.util.Set;
 
+@Node
 public class Product {
 
     @Id
@@ -19,8 +23,8 @@ public class Product {
 
     private Integer totalCost;
 
-    @Relationship(type = "components")
-    private Set<Component> components;
+    @Relationship(type="component")
+    private Set<ComponentRelation> componentRelations = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -54,24 +58,32 @@ public class Product {
         this.totalCost = totalCost;
     }
 
-    public Set<Component> getComponents() {
-        return components;
+    public Set<ComponentRelation> getComponentRelations() {
+        return componentRelations;
     }
 
-    public void setComponents(Set<Component> components) {
-        this.components = components;
+    public void setComponentRelations(Set<ComponentRelation> componentRelations) {
+        this.componentRelations = componentRelations;
+    }
+
+    public void addComponentRelation(Component component) {
+        ComponentRelation componentRelation = new ComponentRelation();
+        componentRelation.setWeight(RandomUtil.randomInt(3));
+        componentRelation.setComponent(component);
+        componentRelations.add(componentRelation);
     }
 
     public Integer countTotalCost() {
         totalCost = 0;
-        if(CollectionUtils.isEmpty(components)) {
+        if(CollectionUtils.isEmpty(componentRelations)) {
             return fixedCost;
         }
-        for(Component component : components) {
-            System.out.print(component.countChangeCost());
-            totalCost += component.countChangeCost();
+        for(ComponentRelation componentRelation : componentRelations) {
+            totalCost += componentRelation.getComponent().countChangeCost() * componentRelation.getWeight();
         }
         totalCost += fixedCost;
         return totalCost;
     }
+
+
 }

@@ -1,6 +1,5 @@
 package com.intent.tianjian.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.intent.tianjian.mock.CreateProductFactory;
 import com.intent.tianjian.product.Component;
 import com.intent.tianjian.product.ComponentRepository;
@@ -9,7 +8,10 @@ import com.intent.tianjian.product.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+
 
 @Service
 public class ProductService {
@@ -21,12 +23,9 @@ public class ProductService {
     private ComponentRepository componentRepository;
 
     public Product getProductByComponentId(Long id){
-        Product product = productRepository.findByComponentId(22L);
-        Optional<Product> productOpt = productRepository.findById(product.getId());
-        if(productOpt.isPresent()){
-            return productOpt.get();
-        }
-        return null;
+        Product product = productRepository.findByComponentId(id);
+        product = productRepository.findById(product.getId()).get();
+        return product;
     }
 
     public Product changeComponentCost(Long id, Integer fixedCost) {
@@ -46,11 +45,15 @@ public class ProductService {
     }
 
     public boolean createProductByCountParam(Integer count) {
-        productRepository.deleteAll();
         for(int i = 0; i < count; i++) {
             Product product = CreateProductFactory.createProduct();
             productRepository.save(product);
         }
+        return true;
+    }
+
+    public boolean clearData() {
+//        sessionFactory.openSession().purgeDatabase();
         return true;
     }
 }

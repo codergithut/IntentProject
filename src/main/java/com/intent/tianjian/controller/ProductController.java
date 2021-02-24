@@ -1,9 +1,6 @@
 package com.intent.tianjian.controller;
 
-import cn.hutool.json.JSON;
-import cn.hutool.json.JSONString;
 import com.alibaba.fastjson.JSONObject;
-import com.intent.tianjian.mock.CreateProductFactory;
 import com.intent.tianjian.product.Product;
 import com.intent.tianjian.product.ProductRepository;
 import com.intent.tianjian.service.ProductService;
@@ -11,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
 
 /**
  * Created by tianjian on 2021/2/23.
@@ -23,10 +18,9 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-
-
     @GetMapping("/batchCreate")
     public boolean createSomeProduct(@RequestParam("count") Integer count) {
+        boolean result = productService.clearData();
         return productService.createProductByCountParam(count);
     }
 
@@ -37,11 +31,11 @@ public class ProductController {
 
     }
 
-    @GetMapping("/test")
-    public String getValue() {
-        Product product = productService.getProductByComponentId(22L);
+    @GetMapping("/search")
+    public Product getProductByComponentId(@RequestParam("componentId") Long componentId) {
+        Product product = productService.getProductByComponentId(componentId);
         if(product != null) {
-            return JSONObject.toJSONString(product);
+            return product;
         }
         return null;
     }
