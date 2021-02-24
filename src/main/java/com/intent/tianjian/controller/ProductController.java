@@ -1,12 +1,18 @@
 package com.intent.tianjian.controller;
 
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONString;
+import com.alibaba.fastjson.JSONObject;
 import com.intent.tianjian.mock.CreateProductFactory;
 import com.intent.tianjian.product.Product;
 import com.intent.tianjian.product.ProductRepository;
+import com.intent.tianjian.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 /**
  * Created by tianjian on 2021/2/23.
@@ -15,25 +21,29 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductService productService;
 
-    public void createSomeProduct(@RequestParam("count") Integer count) {
-        for(int i = 0; i < count; i++) {
-            Product product = CreateProductFactory.createProduct();
-            productRepository.save(product);
-        }
+
+
+    @GetMapping("/batchCreate")
+    public boolean createSomeProduct(@RequestParam("count") Integer count) {
+        return productService.createProductByCountParam(count);
     }
 
-    public void changCostComponent(@RequestParam("id") Integer componentId,
-                                   @RequestParam("fixCost") Integer fixCost) {
-
+    @GetMapping("/changeCost")
+    public Product changCostComponent(@RequestParam("componentId") Long componentId,
+                                   @RequestParam("fixedCost") Integer fixedCost) {
+        return productService.changeComponentCost(componentId, fixedCost);
 
     }
 
     @GetMapping("/test")
-    public void getValue() {
-        Product product = productRepository.findByCompentId("22");
-        System.out.println(product.getName());
+    public String getValue() {
+        Product product = productService.getProductByComponentId(22L);
+        if(product != null) {
+            return JSONObject.toJSONString(product);
+        }
+        return null;
     }
 
 
