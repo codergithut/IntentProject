@@ -9,5 +9,5 @@ public interface ProductRepository extends Neo4jRepository<Product, Long> {
     Product findByName(String name);
 
     @Query("MATCH (t:Product) -[*]-> (c:Component) where id(c)=$id return t")
-    Product findByCompentId(@Param("id") Long id);
+    Product findByComponentId(@Param("id") Long id);
 }

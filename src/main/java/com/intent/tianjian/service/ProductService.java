@@ -21,7 +21,7 @@ public class ProductService {
     private ComponentRepository componentRepository;
 
     public Product getProductByComponentId(Long id){
-        Product product = productRepository.findByCompentId(22L);
+        Product product = productRepository.findByComponentId(22L);
         Optional<Product> productOpt = productRepository.findById(product.getId());
         if(productOpt.isPresent()){
             return productOpt.get();
