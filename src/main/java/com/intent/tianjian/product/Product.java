@@ -1,6 +1,7 @@
 package com.intent.tianjian.product;
 
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
@@ -18,8 +19,6 @@ public class Product {
     private Long id;
 
     private String name;
-
-    private Integer fixedCost;
 
     private Integer totalCost;
 
@@ -42,14 +41,6 @@ public class Product {
         this.name = name;
     }
 
-    public Integer getFixedCost() {
-        return fixedCost;
-    }
-
-    public void setFixedCost(Integer fixedCost) {
-        this.fixedCost = fixedCost;
-    }
-
     public Integer getTotalCost() {
         return totalCost;
     }
@@ -68,7 +59,7 @@ public class Product {
 
     public void addComponentRelation(Component component) {
         ComponentRelation componentRelation = new ComponentRelation();
-        componentRelation.setWeight(RandomUtil.randomInt(3));
+        componentRelation.setWeight(RandomUtil.randomInt(3) + 1);
         componentRelation.setComponent(component);
         componentRelations.add(componentRelation);
     }
@@ -76,12 +67,11 @@ public class Product {
     public Integer countTotalCost() {
         totalCost = 0;
         if(CollectionUtils.isEmpty(componentRelations)) {
-            return fixedCost;
+            return 0;
         }
         for(ComponentRelation componentRelation : componentRelations) {
             totalCost += componentRelation.getComponent().countChangeCost() * componentRelation.getWeight();
         }
-        totalCost += fixedCost;
         return totalCost;
     }
 

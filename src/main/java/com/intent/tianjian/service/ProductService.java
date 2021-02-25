@@ -8,8 +8,6 @@ import com.intent.tianjian.product.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 
@@ -45,15 +43,17 @@ public class ProductService {
     }
 
     public boolean createProductByCountParam(Integer count) {
+        productRepository.deleteAll();
+        componentRepository.deleteAll();
         for(int i = 0; i < count; i++) {
-            Product product = CreateProductFactory.createProduct();
+            Product product = CreateProductFactory.createProduct(10, 3);
+            product.setTotalCost(product.countTotalCost());
             productRepository.save(product);
         }
         return true;
     }
 
     public boolean clearData() {
-//        sessionFactory.openSession().purgeDatabase();
         return true;
     }
 }

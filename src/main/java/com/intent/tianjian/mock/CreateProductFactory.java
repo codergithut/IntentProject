@@ -1,7 +1,10 @@
 package com.intent.tianjian.mock;
 
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.intent.tianjian.product.Component;
+import com.intent.tianjian.product.ComponentRelation;
+import com.intent.tianjian.product.ContainRelation;
 import com.intent.tianjian.product.Product;
 
 import java.util.HashSet;
@@ -11,48 +14,45 @@ import java.util.Set;
  * Created by tianjian on 2021/2/23.
  */
 public class CreateProductFactory {
-    public static Product createProduct() {
-        Component huohuasai = new Component();
-        huohuasai.setFixedCost(RandomUtil.randomInt(100));
-        huohuasai.setTotalCost(0);
-        huohuasai.setName("火花塞");
 
-        Component dahuoshi = new Component();
-        dahuoshi.setName("打火石");
-        dahuoshi.setTotalCost(0);
-        dahuoshi.setFixedCost(RandomUtil.randomInt(200));
-        huohuasai.addContainsRelation(dahuoshi);
-
-        Component taozhi = new Component();
-        taozhi.setName("套子");
-        taozhi.setTotalCost(0);
-        taozhi.setFixedCost(RandomUtil.randomInt(180));
-        huohuasai.addContainsRelation(taozhi);
-
-        Component chepi = new Component();
-        chepi.setFixedCost(RandomUtil.randomInt(220));
-        chepi.setTotalCost(0);
-        chepi.setName("车大皮");
-
-        Component lungu = new Component();
-        lungu.setName("轮毂");
-        lungu.setFixedCost(RandomUtil.randomInt(321));
-        lungu.setTotalCost(0);
-
-        Component lunzi = new Component();
-        lunzi.setName("轮子");
-        lunzi.setFixedCost(RandomUtil.randomInt(123));
-        lunzi.setTotalCost(0);
-        lunzi.addContainsRelation(chepi);
-        lunzi.addContainsRelation(lungu);
-
+    public static Product createProduct(int dep, int nodeMax) {
         Product product = new Product();
-        product.setFixedCost(RandomUtil.randomInt(131));
-        product.setName("机器人" + RandomUtil.randomString(3));
-        product.setTotalCost(0);
-        product.addComponentRelation(huohuasai);
-        product.addComponentRelation(lunzi);
-        product.setTotalCost(product.countTotalCost());
+
+        int i = RandomUtil.randomInt(nodeMax) + 2;
+
+        product.setName(RandomUtil.randomString(9));
+
+        while(i > 0) {
+            i--;
+            Component component = new Component();
+            component.setName(RandomUtil.randomString(6));
+            component.setFixedCost(RandomUtil.randomInt(10) + 1);
+            component.setName(RandomUtil.randomString(3));
+            component.setDepNum(0);
+            component.addContainsRelation(createComponent(dep, nodeMax, 0));
+            product.addComponentRelation(component);
+        }
         return product;
     }
+
+    public static Component createComponent(int dep, int nodeMax, int initDep) {
+        Component component = new Component();
+        component.setName(RandomUtil.randomString(3));
+        component.setFixedCost(RandomUtil.randomInt(4) + 1);
+        component.setDepNum(initDep);
+        if(initDep < dep) {
+            initDep++;
+            if(initDep < dep) {
+                int maxNode = RandomUtil.randomInt(nodeMax);
+                while(maxNode > 0) {
+                    maxNode--;
+                    Component detail = createComponent(dep, nodeMax, initDep);
+                    component.addContainsRelation(detail);
+                }
+            }
+
+        }
+        return component;
+    }
+
 }

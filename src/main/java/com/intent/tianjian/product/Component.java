@@ -23,6 +23,8 @@ public class Component implements CountChangeCost{
 
     private Integer totalCost;
 
+    private Integer depNum;
+
     @Relationship(type="contain")
     private Set<ContainRelation> containRelations = new HashSet();
 
@@ -74,8 +76,13 @@ public class Component implements CountChangeCost{
         this.totalCost = totalCost;
     }
 
+    public Integer getDepNum() {
+        return depNum;
+    }
 
-
+    public void setDepNum(Integer depNum) {
+        this.depNum = depNum;
+    }
 
     @Override
     public Integer countChangeCost() {
