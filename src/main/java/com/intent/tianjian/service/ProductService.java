@@ -1,12 +1,12 @@
 package com.intent.tianjian.service;
 
 import com.intent.tianjian.mock.CreateProductFactory;
-import com.intent.tianjian.mysql.BeanConvertMysqlService;
-import com.intent.tianjian.mysql.eo.ProductEo;
+import com.intent.tianjian.mysql.SaveModeToDataBaseService;
 import com.intent.tianjian.product.Component;
 import com.intent.tianjian.product.ComponentRepository;
 import com.intent.tianjian.product.Product;
 import com.intent.tianjian.product.ProductRepository;
+import com.intent.tianjian.spring.LogPrint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class ProductService {
     private ComponentRepository componentRepository;
 
     @Autowired
-    private BeanConvertMysqlService beanConvertMysqlService;
+    private SaveModeToDataBaseService saveModeToDataBaseService;
 
     public Product getProductByComponentId(Long id){
         Product product = productRepository.findByComponentId(id);
@@ -50,22 +50,23 @@ public class ProductService {
 
     public boolean createProductByCountParam(Integer count) {
         initData();
-        beanConvertMysqlService.initDataBase();
+        saveModeToDataBaseService.initDataBase();
 
         for(int i = 0; i < count; i++) {
             String id = UUID.randomUUID().toString();
-            Product product = CreateProductFactory.createProduct(2, 2);
+            Product product = CreateProductFactory.createProduct(6, 4);
             product.setTotalCost(product.countTotalCost());
-            productRepository.save(product);
-            beanConvertMysqlService.saveProductToMysql(product, id);
-            Product product1 = beanConvertMysqlService.getProductByProductId(id);
-            System.out.print(product);
+            saveModeToDataBaseService.addProductToNeo4j(product);
+            saveModeToDataBaseService.saveProductToMysql(product, id);
         }
-
-
-
         return true;
     }
+
+
+
+
+
+
 
 
     public void initData() {

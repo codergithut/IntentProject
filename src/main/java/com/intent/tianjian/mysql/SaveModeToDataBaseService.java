@@ -8,10 +8,8 @@ import com.intent.tianjian.mysql.curd.ProductCurd;
 import com.intent.tianjian.mysql.eo.ComponentEo;
 import com.intent.tianjian.mysql.eo.ContainsRelationEo;
 import com.intent.tianjian.mysql.eo.ProductEo;
-import com.intent.tianjian.product.Component;
-import com.intent.tianjian.product.ComponentRelation;
-import com.intent.tianjian.product.ContainRelation;
-import com.intent.tianjian.product.Product;
+import com.intent.tianjian.product.*;
+import com.intent.tianjian.spring.LogPrint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -19,7 +17,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 
 @Service
-public class BeanConvertMysqlService {
+public class SaveModeToDataBaseService {
 
     @Autowired
     private ComponentCurd componentCurd;
@@ -30,18 +28,31 @@ public class BeanConvertMysqlService {
     @Autowired
     private ProductCurd productCurd;
 
+    @Autowired
+    private ProductRepository productRepository;
+
 //    private Map<String,Object> datas = new HashMap<>();
 //
 //    private Map<String, List<ContainsRelationEo>> realtions = new HashMap<>();
 
+    @LogPrint
+    public boolean addProductToNeo4j(Product product) {
+        productRepository.save(product);
+        return true;
+    }
+
+    @LogPrint
     public boolean saveProductToMysql(Product product, String id) {
+
+        MysqlEoStore mysqlEoStore = new MysqlEoStore();
 
         ProductEo productEo = new ProductEo();
         productEo.setId(id);
         productEo.setTotalCost(product.getTotalCost());
         productEo.setProductName(product.getName());
+        mysqlEoStore.addProductEo(productEo);
 
-        productCurd.save(productEo);
+        //productCurd.save(productEo);
 
         for(ComponentRelation relation :product.getComponentRelations()) {
 
@@ -52,7 +63,8 @@ public class BeanConvertMysqlService {
             componentEo.setTotalCost(component.getTotalCost());
             componentEo.setId(UUID.randomUUID().toString());
             componentEo.setProductId(productEo.getId());
-            componentCurd.save(componentEo);
+            mysqlEoStore.addComponentEo(componentEo);
+            //componentCurd.save(componentEo);
 
             ContainsRelationEo containsRelationEo = new ContainsRelationEo();
             containsRelationEo.setSourceId(productEo.getId());
@@ -61,15 +73,17 @@ public class BeanConvertMysqlService {
             containsRelationEo.setType("1");
             containsRelationEo.setId(UUID.randomUUID().toString());
             containsRelationEo.setProductId(productEo.getId());
-            containsRelationCurd.save(containsRelationEo);
-            addContainsRelation(componentEo.getId(), component.getContainRelations(), productEo.getId());
+            mysqlEoStore.addContainsRelationEo(containsRelationEo);
+            //containsRelationCurd.save(containsRelationEo);
+            addContainsRelation(componentEo.getId(), component.getContainRelations(), productEo.getId(), mysqlEoStore);
         }
-
+        mysqlEoStore.saveToMySql();
         return true;
     }
 
 
-    private void addContainsRelation(String parentId, Set<ContainRelation> containRelations, String productId) {
+    private void addContainsRelation(String parentId, Set<ContainRelation> containRelations,
+                                     String productId, MysqlEoStore mysqlEoStore) {
         if(CollectionUtils.isEmpty(containRelations)) {
             return ;
         }
@@ -82,7 +96,8 @@ public class BeanConvertMysqlService {
             componentEo.setTotalCost(component.getTotalCost());
             componentEo.setId(UUID.randomUUID().toString());
             componentEo.setProductId(productId);
-            componentCurd.save(componentEo);
+            mysqlEoStore.addComponentEo(componentEo);
+            //componentCurd.save(componentEo);
             ContainsRelationEo containsRelationEo = new ContainsRelationEo();
             containsRelationEo.setSourceId(parentId);
             containsRelationEo.setWeight(containRelation.getWeight());
@@ -90,8 +105,9 @@ public class BeanConvertMysqlService {
             containsRelationEo.setType("2");
             containsRelationEo.setId(UUID.randomUUID().toString());
             containsRelationEo.setProductId(productId);
-            containsRelationCurd.save(containsRelationEo);
-            addContainsRelation(componentEo.getId(), component.getContainRelations(), productId);
+            mysqlEoStore.addContainsRelationEo(containsRelationEo);
+            //containsRelationCurd.save(containsRelationEo);
+            addContainsRelation(componentEo.getId(), component.getContainRelations(), productId, mysqlEoStore);
         }
     }
 
@@ -174,5 +190,46 @@ public class BeanConvertMysqlService {
             }
             realtions.get(key).add(t);
         }
+    }
+
+    class MysqlEoStore {
+        private List<ProductEo> productEos = new ArrayList<>();
+
+        private List<ContainsRelationEo> containsRelationEos = new ArrayList<>();
+
+        private List<ComponentEo> componentEos = new ArrayList<>();
+
+        public List<ProductEo> getProductEos() {
+            return productEos;
+        }
+
+        public void addProductEo(ProductEo productEo) {
+            productEos.add(productEo);
+        }
+
+        public void addContainsRelationEo(ContainsRelationEo containsRelationEo) {
+            containsRelationEos.add(containsRelationEo);
+        }
+
+        public void addComponentEo(ComponentEo componentEo) {
+            componentEos.add(componentEo);
+        }
+
+        public List<ContainsRelationEo> getContainsRelationEos() {
+            return containsRelationEos;
+        }
+
+
+        public List<ComponentEo> getComponentEos() {
+            return componentEos;
+        }
+
+        @LogPrint
+        public void saveToMySql() {
+            containsRelationCurd.saveAll(containsRelationEos);
+            componentCurd.saveAll(componentEos);
+            productCurd.saveAll(productEos);
+        }
+
     }
 }

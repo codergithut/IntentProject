@@ -1,10 +1,9 @@
 package com.intent.tianjian.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.intent.tianjian.mysql.BeanConvertMysqlService;
+import com.intent.tianjian.mysql.SaveModeToDataBaseService;
 import com.intent.tianjian.product.Product;
-import com.intent.tianjian.product.ProductRepository;
 import com.intent.tianjian.service.ProductService;
+import com.intent.tianjian.spring.LogPrint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,9 +19,10 @@ public class ProductController {
     private ProductService productService;
 
     @Autowired
-    private BeanConvertMysqlService beanConvertMysqlService;
+    private SaveModeToDataBaseService saveModeToDataBaseService;
 
     @GetMapping("/batchCreate")
+    @LogPrint
     public boolean createSomeProduct(@RequestParam("count") Integer count) {
         boolean result = productService.clearData();
         return productService.createProductByCountParam(count);
