@@ -1,7 +1,13 @@
 package com.intent.tianjian.mysql.eo;
 
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class ComponentEo {
 
+    @Id
     private String id;
 
     private String componentName;
@@ -9,6 +15,8 @@ public class ComponentEo {
     private Integer fixedCost;
 
     private Integer totalCost;
+
+    private String productId;
 
     public String getId() {
         return id;
@@ -40,5 +48,13 @@ public class ComponentEo {
 
     public void setTotalCost(Integer totalCost) {
         this.totalCost = totalCost;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 }

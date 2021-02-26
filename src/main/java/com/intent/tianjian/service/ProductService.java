@@ -1,6 +1,8 @@
 package com.intent.tianjian.service;
 
 import com.intent.tianjian.mock.CreateProductFactory;
+import com.intent.tianjian.mysql.BeanConvertMysqlService;
+import com.intent.tianjian.mysql.eo.ProductEo;
 import com.intent.tianjian.product.Component;
 import com.intent.tianjian.product.ComponentRepository;
 import com.intent.tianjian.product.Product;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -19,6 +22,9 @@ public class ProductService {
 
     @Autowired
     private ComponentRepository componentRepository;
+
+    @Autowired
+    private BeanConvertMysqlService beanConvertMysqlService;
 
     public Product getProductByComponentId(Long id){
         Product product = productRepository.findByComponentId(id);
@@ -43,14 +49,28 @@ public class ProductService {
     }
 
     public boolean createProductByCountParam(Integer count) {
-        productRepository.deleteAll();
-        componentRepository.deleteAll();
+        initData();
+        beanConvertMysqlService.initDataBase();
+
         for(int i = 0; i < count; i++) {
-            Product product = CreateProductFactory.createProduct(10, 3);
+            String id = UUID.randomUUID().toString();
+            Product product = CreateProductFactory.createProduct(2, 2);
             product.setTotalCost(product.countTotalCost());
             productRepository.save(product);
+            beanConvertMysqlService.saveProductToMysql(product, id);
+            Product product1 = beanConvertMysqlService.getProductByProductId(id);
+            System.out.print(product);
         }
+
+
+
         return true;
+    }
+
+
+    public void initData() {
+        productRepository.deleteAll();
+        componentRepository.deleteAll();
     }
 
     public boolean clearData() {

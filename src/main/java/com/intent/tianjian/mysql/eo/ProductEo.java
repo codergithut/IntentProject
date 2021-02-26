@@ -1,8 +1,13 @@
 package com.intent.tianjian.mysql.eo;
 
 
-public class ProduectEo {
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
+@Entity
+public class ProductEo {
+
+    @Id
     private String id;
 
     private String productName;

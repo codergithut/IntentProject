@@ -1,6 +1,7 @@
 package com.intent.tianjian.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.intent.tianjian.mysql.BeanConvertMysqlService;
 import com.intent.tianjian.product.Product;
 import com.intent.tianjian.product.ProductRepository;
 import com.intent.tianjian.service.ProductService;
@@ -17,6 +18,9 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private BeanConvertMysqlService beanConvertMysqlService;
 
     @GetMapping("/batchCreate")
     public boolean createSomeProduct(@RequestParam("count") Integer count) {
