@@ -26,7 +26,8 @@ public class ProductService {
     @Autowired
     private SaveModeToDataBaseService saveModeToDataBaseService;
 
-    public Product getProductByComponentId(Long id){
+    @LogPrint
+    public Product getProductByNeo4j(Long id){
         Product product = productRepository.findByComponentId(id);
         product = productRepository.findById(product.getId()).get();
         return product;
@@ -41,7 +42,7 @@ public class ProductService {
         saveComponent.setFixedCost(fixedCost);
         componentRepository.save(saveComponent);
 
-        Product product = getProductByComponentId(id);
+        Product product = getProductByNeo4j(id);
         product.countTotalCost();
         productRepository.save(product);
         return product;
@@ -54,7 +55,7 @@ public class ProductService {
 
         for(int i = 0; i < count; i++) {
             String id = UUID.randomUUID().toString();
-            Product product = CreateProductFactory.createProduct(6, 4);
+            Product product = CreateProductFactory.createProduct(3, 10);
             product.setTotalCost(product.countTotalCost());
             saveModeToDataBaseService.addProductToNeo4j(product);
             saveModeToDataBaseService.saveProductToMysql(product, id);

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ContainsRelationCurd extends CrudRepository<ContainsRelationEo,String> {
     List<ContainsRelationEo> findByProductId(String productId);
+
+    ContainsRelationEo findBySourceId(String componentId);
 }

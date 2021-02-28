@@ -111,9 +111,11 @@ public class SaveModeToDataBaseService {
         }
     }
 
-    public Product getProductByProductId(String productId) {
+    @LogPrint
+    public Product getProductByComponentId(String componentId) {
         Product product = new Product();
-        ProductEo productEo = productCurd.findById(productId).get();
+        ComponentEo v = componentCurd.findById(componentId).get();
+        ProductEo productEo = productCurd.findById(v.getProductId()).get();
         List<ContainsRelationEo> containsRelationEos = containsRelationCurd
                 .findByProductId(productEo.getId());
         List<ComponentEo> componentEos = componentCurd.findByProductId(productEo.getId());

@@ -1,5 +1,6 @@
 package com.intent.tianjian.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.intent.tianjian.mysql.SaveModeToDataBaseService;
 import com.intent.tianjian.product.Product;
 import com.intent.tianjian.service.ProductService;
@@ -35,9 +36,20 @@ public class ProductController {
 
     }
 
+    //9ls 34553 34c53032-c17d-466a-9234-33da692d52e9
+
+    @GetMapping("/getProductById")
+    public Product getProductById(@RequestParam("componentId") String componentId,
+                                      @RequestParam("id") Long id) {
+        System.out.println(JSONObject.toJSONString(productService.getProductByNeo4j(id)));
+        System.out.println(JSONObject.toJSONString(saveModeToDataBaseService.getProductByComponentId(componentId)));
+        return null;
+
+    }
+
     @GetMapping("/search")
     public Product getProductByComponentId(@RequestParam("componentId") Long componentId) {
-        Product product = productService.getProductByComponentId(componentId);
+        Product product = productService.getProductByNeo4j(componentId);
         if(product != null) {
             return product;
         }
